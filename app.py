@@ -1,7 +1,9 @@
 # backend/app.py
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationChain
@@ -10,9 +12,20 @@ from langchain.memory import ConversationSummaryMemory
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# 🔑 Replace this with your own Gemini API Key
-os.environ["GOOGLE_API_KEY"] = "AIzaSyA-s_4Jen-Fhh67-vuC3RRSD2UZ8Hj_LRM"
+# ✅ Load environment variables
+load_dotenv()
 
+# ✅ Load API key from .env file
+api_key = os.getenv("API_KEY")
+
+# ✅ Initialize the LLM with API key
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    temperature=0.0,
+    google_api_key=api_key
+)
+
+# ✅ Prompt for child-friendly assistant
 prompt = PromptTemplate(
     input_variables=["question"],
     template="""
@@ -51,9 +64,7 @@ Answer:
 """
 )
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.0)
-
-# Global memory per session
+# ✅ Per-session memory store
 memory_store = {}
 
 @app.route("/ask", methods=["POST"])
