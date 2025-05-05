@@ -12,6 +12,10 @@ from langchain.memory import ConversationSummaryMemory
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+@app.route("/")
+def home():
+    return "Backend is running"
+
 # ✅ Load environment variables
 load_dotenv()
 
@@ -95,4 +99,4 @@ def ask():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host = "0.0.0.0",port = 10000)
